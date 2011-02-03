@@ -1,0 +1,13 @@
+.global{
+    margin-top: 1em;
+    border: 2px #cccccc solid;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -moz-box-shadow: 5px 5px 5px black;
+    -webkit-box-shadow: 5px 5px 5px black;
+    box-shadow: 5px 5px 5px black;
+}
+
+h1{
+    font-size: 6em;
+}
