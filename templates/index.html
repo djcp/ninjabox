@@ -1,0 +1,25 @@
+<div class="grid_12" id="index">
+    <!-- TMPL_IF FILES -->
+    <table border="0" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th>name</th>
+                <th>downloads</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <!-- TMPL_LOOP FILES -->
+        <tr>
+            <td><!-- TMPL_VAR NAME ESCAPE=HTML --></td>
+            <td><!-- TMPL_VAR POPULARITY ESCAPE=HTML --></td>
+            <td></td>
+        </tr>
+        <!-- /TMPL_LOOP -->
+    </table>
+
+    <!-- TMPL_ELSE -->
+    <h2>None yet.</h2>
+
+    <!-- /TMPL_IF -->
+
+</div>

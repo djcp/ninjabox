@@ -8,6 +8,21 @@
     box-shadow: 5px 5px 5px black;
 }
 
-h1{
+h1.title{
     font-size: 6em;
+}
+
+h1, h2, h3, h4{
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+h2{
+    font-size: 2.2em;
+}
+h3{
+    font-size: 1.4em;
+}
+h4{
+    font-size: 1em;
 }
