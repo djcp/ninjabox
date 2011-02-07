@@ -70,9 +70,20 @@ sub upload{
             # OK to upload.
             my @fileinfo = fileparse($q->param('file'),qr/\.[^\.]*/);
             my $insert = $dbh->prepare('insert into files(name,file_size,file_path,uploader_nick,source_url,comments,license_id,uploaded_date) values(?,?,?,?,?,?,?,?)');
-            #    $insert->execute($q->params('name'), '', $
-
-
+            my $name = $fileinfo[0];
+            $name =~ s/[^a-z\d\- ]//gis;
+            my $file_path = 'files/'. $name . '-' . time() . $fileinfo[2];
+            carp($file_path);
+            my $fh = $q->upload('file');
+            open(OUTPUT,'>',$file_path) or croak($!);
+            while(<$fh>){
+                print OUTPUT $_;
+            }
+            close OUTPUT;
+            my $file_size = -s $file_path;
+            carp($q->param('name'),'|', $file_size, '|', $file_path, '|', $q->param('uploader_nick'), '|', $q->param('source_url'), '|', $q->param('comments'), '|', $q->param('license_id'), '|', time());
+            $insert->execute($q->param('name') || '', $file_size || '', $file_path || '', $q->param('uploader_nick') || '', $q->param('source_url') || '', $q->param('comments') || '', $q->param('license_id') || '', time());
+            $insert->finish();
 
         } else{
             # Not uploaded.
