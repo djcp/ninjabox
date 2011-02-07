@@ -26,3 +26,35 @@ h3{
 h4{
     font-size: 1em;
 }
+
+table.upload-form td, table.upload-form th{
+    padding: 5px;
+}
+
+table.upload-form td.notes{
+    color: #ccc;
+}
+
+table.upload-form th.label{
+    vertical-align: top;
+    background-color: #e4e4e4;
+}
+
+table.upload-form tr:hover{
+    background-color: #e4e4e4;
+}
+
+.space-counting{
+    font-size: 10px;
+}
+.indicator{
+    margin-top: 5px;
+    border: 1px solid blue;
+    height: 10px;
+    width: 100px;
+}
+
+.indicator .bar{
+    height: 10px;
+    background-color: blue;
+}

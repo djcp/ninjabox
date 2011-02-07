@@ -10,8 +10,20 @@
     </head>
     <body>
         <div class="global container_12">
-            <div class="header grid_12">
+            <div class="header grid_10">
                 <h1 class="title">NinjaBox</h1>
+            </div>
+            <div class="grid_2">
+                <div class="space-counting">
+                    <!-- TMPL_VAR TOTAL_SPACE_GB --> G / <!-- TMPL_VAR FREE_SPACE_GB --> G used
+                    <div class="indicator">
+                        <div class="bar" style="width: <!-- TMPL_VAR PERCENT_USED -->px"></div>
+                    </div>
+                </div>
+                <div class="menu">
+                    <a href="<!-- TMPL_VAR ROOT_URL -->">home</a>
+                    <a href="<!-- TMPL_VAR ROOT_URL -->?rm=upload">upload</a>
+                </div>
             </div>
             <div class="body">
                 <!-- TMPL_VAR OUTPUT -->

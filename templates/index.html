@@ -12,7 +12,7 @@
         <tr>
             <td><!-- TMPL_VAR NAME ESCAPE=HTML --></td>
             <td><!-- TMPL_VAR POPULARITY ESCAPE=HTML --></td>
-            <td></td>
+            <td><!-- TMPL_VAR FILE_PATH --></td>
         </tr>
         <!-- /TMPL_LOOP -->
     </table>
@@ -22,4 +22,7 @@
 
     <!-- /TMPL_IF -->
 
+    <div id="footer-controls">
+        <a href="?rm=upload">Upload a new file</a>
+    </div>
 </div>
