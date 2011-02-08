@@ -1,0 +1,13 @@
+<div class="grid_12">
+    <!-- TMPL_IF DMCA_LIST -->
+    <!-- TMPL_LOOP DMCA_LIST -->
+    <table border="0" cellpadding="0" cellspacing="0" class="form">
+        <tr>
+            <td>Against <a href="<!-- TMPL_VAR FILE_PATH -->" class="download-link" id="file-<!-- TMPL_VAR FILE_ID -->"><!-- TMPL_VAR FILE_NAME ESCAPE=HTML --></a></td>
+        </tr>
+    </table>
+    <!-- /TMPL_LOOP -->
+    <!-- TMPL_ELSE -->
+    <h3>None yet.</h3>
+    <!-- /TMPL_IF -->
+</div>

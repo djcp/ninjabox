@@ -1,6 +1,6 @@
 <div class="grid_12" id="index">
     <!-- TMPL_IF FILES -->
-    <table border="0" cellpadding="0" cellspacing="0">
+    <table border="0" cellpadding="0" cellspacing="0" class="file-list">
         <thead>
             <tr>
                 <th>name</th>
@@ -12,7 +12,7 @@
         <tr>
             <td><!-- TMPL_VAR NAME ESCAPE=HTML --></td>
             <td><!-- TMPL_VAR POPULARITY ESCAPE=HTML --></td>
-            <td><!-- TMPL_VAR FILE_PATH --></td>
+            <td><a href="<!-- TMPL_VAR FILE_PATH -->" class="download-link" id="file-<!-- TMPL_VAR ID -->">download</a> - <!-- TMPL_VAR FILE_SIZE_IN_MB -->m <span class="size">(<!-- TMPL_VAR FILE_EXTENSION ESCAPE=HTML -->)</span></td>
         </tr>
         <!-- /TMPL_LOOP -->
     </table>

@@ -1,3 +1,7 @@
+body{
+    font-family: verdana, sans-serif;
+}
+
 .global{
     margin-top: 1em;
     border: 2px #cccccc solid;
@@ -10,6 +14,21 @@
 
 h1.title{
     font-size: 6em;
+    font-family: Georgia, serif;
+}
+
+.menu{
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.menu a{
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.menu a:hover{
+    text-decoration: underline;
 }
 
 h1, h2, h3, h4{
@@ -27,20 +46,24 @@ h4{
     font-size: 1em;
 }
 
-table.upload-form td, table.upload-form th{
+table.file-list td, table.file-list th{
     padding: 5px;
 }
 
-table.upload-form td.notes{
+table.form td, table.form th{
+    padding: 5px;
+}
+
+table.form td.notes{
     color: #ccc;
 }
 
-table.upload-form th.label{
+table.form th.label{
     vertical-align: top;
     background-color: #e4e4e4;
 }
 
-table.upload-form tr:hover{
+table.form tr:hover{
     background-color: #e4e4e4;
 }
 

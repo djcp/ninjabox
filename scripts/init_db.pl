@@ -18,15 +18,19 @@ my @statements = (
         name text, 
         file_size integer not null default 0,
         file_path text not null,
+        content_type text,
+        file_extension text,
         uploader_nick text,
         source_url text,
         comments text, 
         license_id integer, 
         uploaded_date integer, 
-        popularity integer,
+        popularity integer default 0,
 
         FOREIGN KEY(license_id) REFERENCES licenses(id)
-    )',
+        )',
+    'create index files_file_extensions on files(file_extension)',
+
     'create table dmca_notices(
         id integer primary key,
         file_id integer,

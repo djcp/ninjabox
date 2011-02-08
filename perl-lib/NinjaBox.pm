@@ -60,20 +60,107 @@ sub setup {
     $self->run_modes(
         'index' => 'index',
         'dmca' => 'dmca',
-        'upload' => 'upload'
+        'upload' => 'upload',
+        'click' => 'click',
+        'dmca_list' => 'dmca_list'
+    );
+}
+
+sub dmca_list{
+    my $self = shift;
+    my $dbh = $self->param('dbh');
+    my $at = $self->init_app_template();
+
+    my $tmpl = $self->load_tmpl('dmca_list.html', die_on_bad_params => 0);
+
+    $tmpl->param(
+        DMCA_LIST => ($dbh->selectall_arrayref('
+                select dmca_notices.*, files.name as file_name, files.file_path 
+                from dmca_notices,files 
+                where dmca_notices.file_id = files.id 
+                order by dmca_notices.id',{Columns => {}}) || [])
     );
 
+    $at->param(
+        HTML_TITLE => 'DMCA Takedown notices',
+        OUTPUT => $tmpl->output()
+    );
+    $at->output();
+}
+
+sub dmca{
+    my $self = shift;
+    my $q = $self->query();
+    my $dbh = $self->param('dbh');
+    my $error = '';
+    if(
+        $q->request_method() eq 'POST' 
+        && $q->param('file_id') 
+        && $q->param('reason') 
+        && $self->check_email($q->param('email'))
+    ){
+        $dbh->do('insert into dmca_notices(file_id,reason,phone,email,name) values(?,?,?,?,?)',{},
+            ($q->param('file_id'), $q->param('reason'), $q->param('phone') || '', $q->param('email') || '', $q->param('name') || '' )
+        );
+        $self->header_type('redirect');
+        $self->header_props(-url => $q->url(-absolute => 1));
+        return;
+    }
+    my $at = $self->init_app_template();
+    my $form = $self->load_tmpl('dmca.html', die_on_bad_params => 0);
+    my $files = $dbh->selectall_arrayref('select * from files order by file_path', {Columns => {}});
+    my ($labels, $values);
+    foreach my $file(@$files){
+        push @$values, $file->{'id'};
+        $labels->{$file->{'id'}} = $file->{'name'} .' - '.$file->{'file_path'};
+    }
+
+    $form->param(
+        FORM_START => $q->start_form(-method => 'POST') . $q->hidden(-name => 'rm', -value => 'dmca'),
+        FILE_ID => $q->popup_menu(-name => 'file_id', -labels => $labels, -values => $values),
+        REASON => $q->textarea(-name => 'reason', -rows => 5, -cols => 40), 
+        PHONE => $q->textfield(-name => 'phone', -size => 20),
+        EMAIL => $q->textfield(-name => 'email', -size => 30),
+        NAME => $q->textfield(-name => 'name', -size => 25),
+        SUBMIT => $q->submit(-value => 'Submit DMCA Notice')
+    );
+
+    $at->param(HTML_TITLE => 'Submit a DMCA takedown notice',
+        OUTPUT => $form->output()
+    );
+    $at->output();
+}
+
+sub check_email{
+    my ($self,$email) = @_;
+    return 0 unless($email);
+    if($email =~ m/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i){
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub click{
+    my $self = shift;
+    my $q = $self->query();
+    if($q->request_method() eq 'POST'){
+        my $dbh = $self->param('dbh');
+        my $file_id = $q->param('id');
+        if($file_id){
+            $dbh->do('update files set popularity = popularity + 1 where id = ?', {}, ($file_id));
+        }
+        $self->header_props(-status => '200 OK');
+    }
+    return;
 }
 
 sub check_fs_quota{
     my ($leave_this_percent_free,$total_fs_kb,$used_kb,$content_length_kb) = @_;
     my $percent_free_after_upload = (($total_fs_kb - ($used_kb + $content_length_kb)) / $total_fs_kb) * 100;
-    #carp('Percent free after upload: ' . $percent_free_after_upload);
-    #carp('Percent to leave free: ' . $leave_this_percent_free);
     if($percent_free_after_upload < $leave_this_percent_free){
         return 0;
     } else {
-        # carp('ok for upload');
         return 1;
     }
 }
@@ -84,13 +171,14 @@ sub upload{
     my $q = $self->query();
     my $at = $self->init_app_template();
     my $error = '';
-    if($q->request_method() eq 'POST'){
-        #my ($fs_type, $fs_desc, $used, $avail, $fused, $favail) = df($self->param('root_partition'));
-
+    if( 
+        $q->request_method() eq 'POST' 
+        && $q->param('file') 
+    ){
         if(check_fs_quota($self->param('leave_this_percent_free'), $self->param('total_fs_kb'), $self->param('used'), $q->http('Content-Length') / 1024)){
             # OK to upload.
             my @fileinfo = fileparse($q->param('file'),qr/\.[^\.]*/);
-            my $insert = $dbh->prepare('insert into files(name,file_size,file_path,uploader_nick,source_url,comments,license_id,uploaded_date) values(?,?,?,?,?,?,?,?)');
+            my $insert = $dbh->prepare('insert into files(name,file_size,file_path,uploader_nick,source_url,comments,license_id,uploaded_date,content_type,file_extension) values(?,?,?,?,?,?,?,?,?,?)');
             my $name = $fileinfo[0];
             $name =~ s/[^a-z\d\- ]//gis;
             my $file_path = 'files/'. $name . '-' . time() . $fileinfo[2];
@@ -101,7 +189,7 @@ sub upload{
             }
             close OUTPUT;
             my $file_size = -s $file_path;
-            $insert->execute($q->param('name') || '', $file_size || '', $file_path || '', $q->param('uploader_nick') || '', $q->param('source_url') || '', $q->param('comments') || '', $q->param('license_id') || '', time());
+            $insert->execute($q->param('name') || '', $file_size || '', $file_path || '', $q->param('uploader_nick') || '', $q->param('source_url') || '', $q->param('comments') || '', $q->param('license_id') || '', time(),$q->uploadInfo($q->param('file'))->{'Content-Type'} || '', $fileinfo[2] );
             $insert->finish();
             $self->header_type('redirect');
             $self->header_props(-url => $q->url(-absolute => 1));
@@ -143,6 +231,10 @@ sub index{
     my $at = $self->init_app_template();
     my $tmpl = $self->load_tmpl('index.html', die_on_bad_params => 0);
     my $files = $dbh->selectall_arrayref('select * from files order by popularity, uploaded_date', {Columns => {}});
+
+    for(@$files){
+        $_->{FILE_SIZE_IN_MB} = sprintf('%.2f',$_->{file_size} / 1024 / 1024);
+    }
 
     $tmpl->param(FILES => $files);
     $at->param(
