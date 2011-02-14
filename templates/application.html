@@ -15,9 +15,9 @@
             </div>
             <div class="grid_2">
                 <div class="space-counting">
-                    <!-- TMPL_VAR TOTAL_SPACE_GB --> G / <!-- TMPL_VAR FREE_SPACE_GB --> G used
+                    <!-- TMPL_VAR TOTAL_SPACE_GB ESCAPE=HTML --> G / <!-- TMPL_VAR FREE_SPACE_GB ESCAPE=HTML --> G used
                     <div class="indicator">
-                        <div class="bar" style="width: <!-- TMPL_VAR PERCENT_USED -->px"></div>
+                        <div class="bar" style="width: <!-- TMPL_VAR PERCENT_USED ESCAPE=HTML -->px"></div>
                     </div>
                 </div>
                 <div class="menu">
@@ -29,7 +29,12 @@
                 <!-- TMPL_VAR OUTPUT -->
             </div>
             <div class="footer grid_12">
-                <h3>footer</h3>
+                <div class="grid_6 alpha">
+                    &copy; Dan Collis-Puro 2011
+                </div>
+                <div class="grid_6 omega" style="text-align: right">
+                    <a href="<!-- TMPL_VAR ROOT_URL -->?rm=dmca_list">dmca info</a>
+                </div>
             </div>
 
             <div class="clear"></div>

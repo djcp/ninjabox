@@ -1,13 +1,27 @@
 <div class="grid_12">
+    <h2>DMCA Information</h2>
+    <p>Below are the items that've had DMCA takedown notices issued against them.</p>
     <!-- TMPL_IF DMCA_LIST -->
     <!-- TMPL_LOOP DMCA_LIST -->
-    <table border="0" cellpadding="0" cellspacing="0" class="form">
-        <tr>
-            <td>Against <a href="<!-- TMPL_VAR FILE_PATH -->" class="download-link" id="file-<!-- TMPL_VAR FILE_ID -->"><!-- TMPL_VAR FILE_NAME ESCAPE=HTML --></a></td>
-        </tr>
-    </table>
+    <div class="takedown">
+        <div class="takedown-actions">
+            <a href="#" class="delete-file" id="file-<!-- TMPL_VAR FILE_ID ESCAPE=HTML -->">delete file</a>
+            <a href="#" class="delete-notice" id="file-<!-- TMPL_VAR ID ESCAPE=HTML -->">delete notice</a>
+        </div>
+        Against <a href="<!-- TMPL_VAR FILE_PATH -->" class="download-link" id="file-<!-- TMPL_VAR FILE_ID ESCAPE=HTML -->"><!-- TMPL_VAR FILE_NAME ESCAPE=HTML --></a> <a href="#" class="dmca-details-toggle readmore" id="dmca-details-toggle-<!-- TMPL_VAR ID ESCAPE=HTML -->">more &raquo;</a>
+        <div id="dmca-details-<!-- TMPL_VAR ID ESCAPE=HTML -->" style="display: none;">
+            <dl>
+                <dt>Reason:</dt>
+                <dd><!-- TMPL_VAR REASON ESCAPE=HTML --></dd>
+                <dt>Contact:</dt>
+                <dd><!-- TMPL_VAR NAME ESCAPE=HTML -->, <!-- TMPL_VAR EMAIL ESCAPE=HTML --> - <!-- TMPL_VAR PHONE ESCAPE=HTML --></dd>
+            </dl>
+        </div>
+    </div>
+    <div class="clear"></div>
     <!-- /TMPL_LOOP -->
     <!-- TMPL_ELSE -->
     <h3>None yet.</h3>
     <!-- /TMPL_IF -->
+    <p><a href="?rm=dmca">Issue a DMCA takedown notice against content uploaded to this website.</a></p>
 </div>

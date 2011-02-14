@@ -1,14 +1,13 @@
-BEGIN {
-    use CGI::Carp qw(carpout);
-    open(LOG, ">>/tmp/nb.error.log") or
-    die("Unable to open mycgi-log: $!\n");
-    carpout(LOG);
-}
+#BEGIN {
+#    use CGI::Carp qw(carpout);
+#    open(LOG, ">>/tmp/nb.error.log") or
+#    die("Unable to open mycgi-log: $!\n");
+#    carpout(LOG);
+#}
 package NinjaBox;
 use strict;
 use warnings;
 use DBI;
-use Filesys::DiskSpace;
 use base 'CGI::Application';
 use CGI::Carp;
 use File::Basename qw/fileparse/;
@@ -42,9 +41,11 @@ sub init_app_template{
 
 sub init_filespace_counting{
     my $self = shift;
-    my ($fs_type, $fs_desc, $used, $avail, $fused, $favail) = df($self->param('root_partition'));
-    $self->param('total_fs_kb', $avail + $used);
-    $self->param('used', $used);
+    my $root_partition = $self->param('root_partition');
+    my @out = `/bin/df $root_partition`;
+    my @num =($out[-1] =~ m/\s(\d+)\s/g);
+    $self->param('total_fs_kb', $num[2] + $num[1]);
+    $self->param('used', $num[1]);
 }
 
 sub teardown {
@@ -62,7 +63,9 @@ sub setup {
         'dmca' => 'dmca',
         'upload' => 'upload',
         'click' => 'click',
-        'dmca_list' => 'dmca_list'
+        'dmca_list' => 'dmca_list',
+        'delete_notice' => 'delete_notice',
+        'delete_file' => 'delete_file'
     );
 }
 
@@ -99,7 +102,7 @@ sub dmca{
         && $q->param('reason') 
         && $self->check_email($q->param('email'))
     ){
-        $dbh->do('insert into dmca_notices(file_id,reason,phone,email,name) values(?,?,?,?,?)',{},
+        $dbh->do('insert into dmca_notices(file_id,reason,phone,email,name,issued_on) values(?,?,?,?,?,datetime(\'now\'))',{},
             ($q->param('file_id'), $q->param('reason'), $q->param('phone') || '', $q->param('email') || '', $q->param('name') || '' )
         );
         $self->header_type('redirect');
@@ -178,7 +181,7 @@ sub upload{
         if(check_fs_quota($self->param('leave_this_percent_free'), $self->param('total_fs_kb'), $self->param('used'), $q->http('Content-Length') / 1024)){
             # OK to upload.
             my @fileinfo = fileparse($q->param('file'),qr/\.[^\.]*/);
-            my $insert = $dbh->prepare('insert into files(name,file_size,file_path,uploader_nick,source_url,comments,license_id,uploaded_date,content_type,file_extension) values(?,?,?,?,?,?,?,?,?,?)');
+            my $insert = $dbh->prepare('insert into files(name,file_size,file_path,uploader_nick,source_url,comments,license_id,content_type,file_extension,uploaded_date) values(?,?,?,?,?,?,?,?,?,datetime(\'now\'))');
             my $name = $fileinfo[0];
             $name =~ s/[^a-z\d\- ]//gis;
             my $file_path = 'files/'. $name . '-' . time() . $fileinfo[2];
@@ -189,7 +192,7 @@ sub upload{
             }
             close OUTPUT;
             my $file_size = -s $file_path;
-            $insert->execute($q->param('name') || '', $file_size || '', $file_path || '', $q->param('uploader_nick') || '', $q->param('source_url') || '', $q->param('comments') || '', $q->param('license_id') || '', time(),$q->uploadInfo($q->param('file'))->{'Content-Type'} || '', $fileinfo[2] );
+            $insert->execute($q->param('name') || '', $file_size || '', $file_path || '', $q->param('uploader_nick') || '', $q->param('source_url') || '', $q->param('comments') || '', $q->param('license_id') || '', $q->uploadInfo($q->param('file'))->{'Content-Type'} || '', $fileinfo[2] );
             $insert->finish();
             $self->header_type('redirect');
             $self->header_props(-url => $q->url(-absolute => 1));

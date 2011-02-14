@@ -1,20 +1,56 @@
 body{
     font-family: verdana, sans-serif;
+    background-color: black;
 }
 
+p{
+    margin-bottom: .5em;
+}
+
+dl{
+    margin: 1em;
+}
+
+dt{
+    font-weight: bold;
+    font-size: larger
+}
+dd{
+    margin-left: 2em;
+}
+
+.clear{
+    clear: both;
+}
 .global{
     margin-top: 1em;
     border: 2px #cccccc solid;
     border-radius: 10px;
     -moz-border-radius: 10px;
-    -moz-box-shadow: 5px 5px 5px black;
-    -webkit-box-shadow: 5px 5px 5px black;
-    box-shadow: 5px 5px 5px black;
+    -moz-box-shadow: 5px 5px 5px #aaa;
+    -webkit-box-shadow: 5px 5px 5px #aaa;
+    box-shadow: 5px 5px 5px #aaa;
+    background-color: white;
 }
 
 h1.title{
     font-size: 6em;
     font-family: Georgia, serif;
+}
+
+.readmore{
+    font-size: 10px;
+}
+
+.takedown{
+    margin-bottom: 1em;
+    background-color: #e4e4e4;
+    border-bottom: 1px solid #ccc;
+    padding: 5px;
+}
+
+.takedown-actions{
+    float: right;
 }
 
 .menu{
@@ -30,6 +66,7 @@ h1.title{
 .menu a:hover{
     text-decoration: underline;
 }
+
 
 h1, h2, h3, h4{
     font-size: 3em;
@@ -80,4 +117,16 @@ table.form tr:hover{
 .indicator .bar{
     height: 10px;
     background-color: blue;
+}
+
+.footer{
+    border-top: 1px solid #e4e4e4;
+    padding: 5px 0px 5px 0px;
+    margin-top: 15px;
+    font-size: 10px;
+    color: #999;
+}
+
+.footer a{
+    color: #999;
 }

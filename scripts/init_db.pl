@@ -24,7 +24,7 @@ my @statements = (
         source_url text,
         comments text, 
         license_id integer, 
-        uploaded_date integer, 
+        uploaded_date text, 
         popularity integer default 0,
 
         FOREIGN KEY(license_id) REFERENCES licenses(id)
@@ -38,8 +38,9 @@ my @statements = (
         phone text,
         email text,
         name text,
+        issued_on text,
 
-        FOREIGN KEY(file_id) REFERENCES files(id)
+        FOREIGN KEY(file_id) REFERENCES files(id) ON UPDATE CASCADE ON DELETE CASCADE
     )'
 );
 
